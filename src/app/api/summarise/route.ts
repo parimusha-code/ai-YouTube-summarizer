@@ -10,10 +10,23 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "YouTube URL is required" }, { status: 400 });
         }
 
-        // Normalize Shorts URL to standard Watch URL
-        let normalizedUrl = url;
-        if (url.includes("/shorts/")) {
-            normalizedUrl = url.replace("/shorts/", "/watch?v=");
+        let normalizedUrl = url.trim();
+
+        // 1. Handle raw Video IDs (11 chars) with or without query params
+        const idRegex = /^[a-zA-Z0-9_-]{11}$/;
+        const potentialId = normalizedUrl.split('?')[0];
+        if (idRegex.test(potentialId)) {
+            normalizedUrl = `https://www.youtube.com/watch?v=${normalizedUrl}`;
+        }
+
+        // 2. Handle YouTube Shorts
+        if (normalizedUrl.includes("/shorts/")) {
+            normalizedUrl = normalizedUrl.replace("/shorts/", "/watch?v=");
+        }
+
+        // 3. Ensure protocol for common domains
+        if (!normalizedUrl.startsWith("http") && (normalizedUrl.includes("youtube.com") || normalizedUrl.includes("youtu.be"))) {
+            normalizedUrl = `https://${normalizedUrl}`;
         }
 
         if (!process.env.OPENAI_API_KEY) {

@@ -56,7 +56,7 @@ export default function Home() {
         <form onSubmit={handleSummarize} className="space-y-6 relative z-10">
           <div>
             <input
-              type="url"
+              type="text"
               name="url"
               id="url"
               className="w-full px-5 py-4 bg-purple-50/50 border-2 border-purple-100 rounded-xl focus:border-purple-400 focus:ring-4 focus:ring-purple-200/50 outline-none transition-all duration-300 text-gray-800 placeholder-gray-400 text-lg"
