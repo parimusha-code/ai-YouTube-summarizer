@@ -10,6 +10,12 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "YouTube URL is required" }, { status: 400 });
         }
 
+        // Normalize Shorts URL to standard Watch URL
+        let normalizedUrl = url;
+        if (url.includes("/shorts/")) {
+            normalizedUrl = url.replace("/shorts/", "/watch?v=");
+        }
+
         if (!process.env.OPENAI_API_KEY) {
             return NextResponse.json({ message: "OpenAI API Key is missing in environment variables." }, { status: 500 });
         }
@@ -17,7 +23,7 @@ export async function POST(req: Request) {
         // 1. Fetch transcript
         let transcriptParts;
         try {
-            transcriptParts = await YoutubeTranscript.fetchTranscript(url);
+            transcriptParts = await YoutubeTranscript.fetchTranscript(normalizedUrl);
         } catch (e: any) {
             return NextResponse.json({ message: "Could not fetch transcript. Make sure the video has captions enabled." }, { status: 400 });
         }
